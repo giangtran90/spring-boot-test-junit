@@ -20,8 +20,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import static org.hamcrest.Matchers.hasSize;
-import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -72,7 +71,20 @@ class BookControllerTest {
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(MockMvcResultMatchers.jsonPath("$", hasSize(3)))
-                .andExpect(jsonPath("$[2].name", is("Hoa")));
+                .andExpect(jsonPath("$[2].name", is("Hoa")))
+                .andExpect(jsonPath("$[0].name", is("Toan")));
 
+    }
+
+    @Test
+    public void getBookById_Success() throws Exception{
+        Mockito.when(bookRepository.findById(Record_1.getId())).thenReturn(java.util.Optional.of(Record_1));
+        mockMvc.perform(
+                MockMvcRequestBuilders
+                .get("/api/v1/books/1")
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$",notNullValue()))
+                .andExpect(jsonPath("$.name", is("Toan")));
     }
 }
