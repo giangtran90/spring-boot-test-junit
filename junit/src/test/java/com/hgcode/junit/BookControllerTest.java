@@ -12,6 +12,7 @@ import org.mockito.MockitoAnnotations;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -86,5 +87,32 @@ class BookControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$",notNullValue()))
                 .andExpect(jsonPath("$.name", is("Toan")));
+    }
+
+    // tao ban ghi => mo phong luu (method save) => khi thuc hien bai dang dam bao o dang chuoi
+    @Test
+    public void createBook_success() throws Exception {
+        // tao ban ghi
+        Book record = Book.builder()
+                .id(4L)
+                .name("Sinh")
+                .summary("sach Sinh ")
+                .rating(5).build();
+        String content = objectWriter.writeValueAsString(record);
+
+        // mo phong phuong thuc luu va tra ket qua
+        Mockito.when(bookRepository.save(record)).thenReturn(record);
+
+        // Mo phong kich ban test => dau tien xay dung mot ban dung Servlet gia lap
+        MockHttpServletRequestBuilder mockRequest =
+                MockMvcRequestBuilders.post("/api/v1/books")
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON)
+                .content(content);
+        // Sau khi co ban yeu cau mo phong de post data => thuc hien yeu cau gia dinh
+        mockMvc.perform(mockRequest)
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$",notNullValue()))
+                .andExpect(jsonPath("$.name", is("Sinh")));
     }
 }
