@@ -20,6 +20,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 import static org.hamcrest.Matchers.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -139,5 +140,14 @@ class BookControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", notNullValue()))
                 .andExpect(jsonPath("$.name", is("Anh")));
+    }
+
+    @Test
+    public void deleteBook_success() throws Exception{
+        Mockito.when(bookRepository.findById(Record_2.getId())).thenReturn(Optional.of(Record_2));
+        mockMvc.perform(MockMvcRequestBuilders
+                .delete("/api/v1/books/2")
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
     }
 }

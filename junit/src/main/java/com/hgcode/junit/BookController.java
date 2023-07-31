@@ -42,4 +42,12 @@ public class BookController {
         existBook.setRating(book.getRating());
         return bookRepository.save(existBook);
     }
+
+    @DeleteMapping("/books/{id}")
+    public void deleteBook(@PathVariable Long id) throws ClassNotFoundException {
+        if (!bookRepository.findById(id).isPresent()){
+            throw new ClassNotFoundException("Book id " + id + "not exist");
+        }
+        bookRepository.deleteById(id);
+    }
 }
